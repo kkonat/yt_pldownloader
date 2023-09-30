@@ -1,4 +1,6 @@
 *.dll
 *.exe
+*.mp3
 Downloads
 test_playlists.md
+launch.json

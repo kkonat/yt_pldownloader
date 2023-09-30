@@ -6,16 +6,22 @@ def run(pl):
     # insert the downloads destination (optional)
     # e.g. C:\Users\Username\Folder
     # filepath = input("Downloads destination (optional): ")
-    filepath = "./Downloads"
+    filepath = pl.title.strip()
+    filepath = "".join(
+        c for c in filepath if c not in ("/", "\\", ":", "*", "?", '"', "<", ">", "|")
+    )
+
+    if not os.path.exists(filepath):
+        os.makedirs(filepath)
     # get linked list of links in the playlist
     links = pl.video_urls
     # download each item in the list
     pllen = len(links)
     current = 0
     for l in links:
+        current += 1
         # os.system("cls")
         print("Processing " + str(current) + " of " + str(pllen) + "... ")
-        current += 1
         # converts the link to a YouTube object
         yt = YouTube(l)
 
@@ -25,6 +31,13 @@ def run(pl):
 
         # gets the filename of the first video stream
         default_filename = music.default_filename
+        artist_track = default_filename.replace(".mp4", "").split("-")
+        if len(artist_track) == 1:
+            title = artist_track[0].strip()
+            artist = ""
+        else  :
+            artist = artist_track[0].strip().title()
+            title = artist_track[1].strip().title()
 
         new_filename = default_filename.replace("mp4", "mp3")
         new_filename = new_filename.replace("  ", " ")
@@ -39,50 +52,40 @@ def run(pl):
             for c in new_filename
             if c not in ("/", "\\", ":", "*", "?", '"', "<", ">", "|")
         )
-        downloaded_path = os.path.abspath("./Downloads")
+        downloaded_path = os.path.abspath(filepath)
 
         # skip if new_filename already exists in downloaded_path
         if os.path.exists(os.path.join(downloaded_path, new_filename)):
             print("Already processed, skipping " + default_filename + "...")
             continue
 
-        print("Downloading " + default_filename + " -> " + new_filename + "...")
+        print("Downloading " + default_filename + "...")
 
         # downloads first video stream and rename the first video stream
         try:
             music.download()
         except:
+            print("! Error downloading ")
             continue
 
-        print("Converting to mp3....")
 
         # converts mp4 video to mp3 audio and moving the audio to folder input
         # NOTE: MUST HAVE "ffmpeg.exe" DOWNLOADED AND PLACED INSIDE THE DIRECTORY
         try:
+            print("Converting to mp3 -> " + new_filename + " ....")
             subprocess.call(
-                f'ffmpeg -i "{default_filename}" {new_filename}',
+                f'.\\ffmpeg\\ffmpeg -i "{default_filename}" -metadata Track="{current}" -metadata Title="{title}" -metadata Artist="{artist}" -vn {new_filename}',
                 shell=True,
             )
+            shutil.move(new_filename, downloaded_path, new_filename)
         except:
-            os.remove(default_filename)
-            continue
-
-        # if exception then create download folder if not exists and store the downloaded audios
-        try:
-            # if filepath is empty then create download if not exists and store the downloaded audios
-            if filepath == "":
-                shutil.move(new_filename, downloaded_path, new_filename)
-            else:
-                shutil.move(new_filename, downloaded_path, new_filename)
-        except:
-            if os.path.exists("./Downloads"):
-                shutil.move(new_filename, downloaded_path, new_filename)
-            else:
-                os.makedirs("./Downloads")
-                shutil.move(new_filename, downloaded_path, new_filename)
+            print("! Error converting ")
+            pass
         os.remove(default_filename)
+        # if exception then create download folder if not exists and store the downloaded audios
+       
 
-    print("Download finished.")
+    print("Finished.")
 
 
 if __name__ == "__main__":

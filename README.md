@@ -6,15 +6,15 @@ This script will download the audio of every song in a YouTube playlist, then co
 Please let me know if there are any bugs.
 
 ## Packages and versions
-- pytube==12.1.0
+- pytube==15.0.0
 
 ## Installation
-1. git clone ``https://github.com/Charlzk05/yt-playlist.git`` or download the source code
+1. git clone ``https://github.com/kkonat/yt_pldownloader`` or download the source code
 2. navigate to the folder
 3. download ffmpeg
     https://github.com/BtbN/FFmpeg-Builds/releases
 4. do ``pip install -r requirements.txt`` to install the package from requirements.txt
-
+5. files are downloaded, converted and saved to Downloads diree
 6. enjoy!
 
 ## Usage
